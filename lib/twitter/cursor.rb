@@ -2,28 +2,32 @@ require 'twitter/core_ext/kernel'
 
 module Twitter
   class Cursor
-    attr_reader :collection
-    attr_accessor :attrs
+    attr_reader :attrs, :response_headers
+    attr_accessor :collection
+    alias body attrs
     alias to_hash attrs
+    alias headers response_headers
 
     # Initializes a new Cursor object
     #
-    # @param attrs [Hash]
+    # @param response [Hash]
     # @params method [String, Symbol] The name of the method to return the collection
     # @params klass [Class] The class to instantiate object in the collection
     # @return [Twitter::Cursor]
-    def initialize(attrs, method, klass=nil)
-      @attrs = attrs
-      @collection = Array(attrs[method.to_s]).map do |item|
+    def self.from_response(response={}, method='ids', klass=nil)
+      cursor = self.new
+      cursor.update_from_response!(response, method)
+      cursor.collection = Array(response[:body][method.to_s]).map do |item|
         if klass
-          klass.get_or_new(item)
+          klass.from_response(:body => item, :response_headers => response[:response_headers])
         else
           item
         end
       end
-      class_eval do
-        alias_method method.to_sym, :collection
+      instance_eval do
+        alias_method(method.to_sym, :collection)
       end
+      cursor
     end
 
     def next_cursor
@@ -47,6 +51,18 @@ module Twitter
       next_cursor.zero?
     end
     alias last last?
+
+    # Update the attributes of an object
+    #
+    # @param response [Hash]
+    # @return [Twitter::Cursor]
+    def update_from_response!(response, method)
+      @attrs ||= {}
+      @attrs.merge!(response[:body]) if response[:body] && response[:body]
+      @response_headers ||= {}
+      @response_headers.merge!(response[:response_headers]) if response[:response_headers]
+      self
+    end
 
   end
 end

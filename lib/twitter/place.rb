@@ -8,7 +8,7 @@ module Twitter
 
     # @return [Twitter::Point, Twitter::Polygon]
     def bounding_box
-      @bounding_box ||= Twitter::GeoFactory.new(@attrs['bounding_box']) unless @attrs['bounding_box'].nil?
+      @bounding_box ||= Twitter::GeoFactory.from_response(:body => @attrs['bounding_box'], :response_headers => self.response_headers) unless @attrs['bounding_box'].nil?
     end
 
     # @return [String]

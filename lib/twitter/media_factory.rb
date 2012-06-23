@@ -5,13 +5,13 @@ module Twitter
 
     # Instantiates a new media object
     #
-    # @param attrs [Hash]
+    # @param response [Hash]
     # @raise [ArgumentError] Error raised when supplied argument is missing a 'type' key.
     # @return [Twitter::Photo]
-    def self.new(media={})
-      type = media.delete('type')
-      if type
-        Twitter.const_get(type.capitalize.to_sym).get_or_new(media)
+    def self.from_response(response={})
+      body = response[:body]
+      if type = body.delete('type')
+        Twitter.const_get(type.capitalize.to_sym).from_response(response)
       else
         raise ArgumentError, "argument must have a 'type' key"
       end

@@ -3,24 +3,27 @@ require 'twitter/base'
 module Twitter
   class Identifiable < Base
 
-    def self.get(attrs={})
+    def self.fetch(response)
+      response ||= {}
+      body = response[:body] || {}
+      id = body['id']
       @@identity_map[self] ||= {}
-      attrs['id'] && @@identity_map[self][attrs['id']] && @@identity_map[self][attrs['id']].update(attrs) || super
+      id && @@identity_map[self][id] && @@identity_map[self][id].update_from_response!(response) || super(body)
     end
 
-    def self.get_or_new(attrs={})
-      self.get(attrs) || self.new(attrs)
+    def self.from_response(response={})
+      self.fetch(response) || self.new(response)
     end
 
     # Initializes a new object
     #
-    # @param attrs [Hash]
+    # @param response [Hash]
     # @return [Twitter::Base]
-    def initialize(attrs={})
-      if attrs['id']
-        self.update(attrs)
+    def initialize(response={})
+      if response[:body] && response[:body]['id']
+        self.update_from_response!(response)
         @@identity_map[self.class] ||= {}
-        @@identity_map[self.class][attrs['id']] = self
+        @@identity_map[self.class][response[:body]['id']] = self
       else
         super
       end

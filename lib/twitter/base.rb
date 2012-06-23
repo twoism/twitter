@@ -1,9 +1,13 @@
 require 'twitter/identity_map'
+require 'twitter/rate_limitable'
 
 module Twitter
   class Base
-    attr_accessor :attrs
+    include Twitter::RateLimitable
+    attr_reader :attrs, :response_headers
+    alias body attrs
     alias to_hash attrs
+    alias headers response_headers
 
     @@identity_map = IdentityMap.new
 
@@ -23,41 +27,44 @@ module Twitter
       end
     end
 
-    def self.get(attrs={})
+    def self.fetch(attrs)
+      attrs ||= {}
       @@identity_map[self] ||= {}
       @@identity_map[self][Marshal.dump(attrs)]
     end
 
-    def self.get_or_new(attrs={})
-      self.get(attrs) || self.new(attrs)
+    def self.from_response(response={})
+      self.fetch(response[:body]) || self.new(response)
     end
 
     # Initializes a new object
     #
-    # @param attrs [Hash]
+    # @param response [Hash]
     # @return [Twitter::Base]
-    def initialize(attrs={})
-      self.update(attrs)
+    def initialize(response={})
+      self.update_from_response!(response)
       @@identity_map[self.class] ||= {}
-      @@identity_map[self.class][Marshal.dump(attrs)] = self
+      @@identity_map[self.class][Marshal.dump(response[:body])] = self
     end
 
     # Fetches an attribute of an object using hash notation
     #
     # @param method [String, Symbol] Message to send to the object
     def [](method)
-      self.__send__(method.to_sym)
+      self.send(method.to_sym)
     rescue NoMethodError
       nil
     end
 
     # Update the attributes of an object
     #
-    # @param attrs [Hash]
+    # @param response [Hash]
     # @return [Twitter::Base]
-    def update(attrs)
+    def update_from_response!(response)
       @attrs ||= {}
-      @attrs.merge!(attrs)
+      @attrs.merge!(response[:body]) if response[:body]
+      @response_headers ||= {}
+      @response_headers.merge!(response[:response_headers]) if response[:response_headers]
       self
     end
 

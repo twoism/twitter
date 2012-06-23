@@ -6,13 +6,13 @@ module Twitter
 
     # Instantiates a new geo object
     #
-    # @param attrs [Hash]
+    # @param response [Hash]
     # @raise [ArgumentError] Error raised when supplied argument is missing a 'type' key.
     # @return [Twitter::Point, Twitter::Polygon]
-    def self.new(geo={})
-      type = geo.delete('type')
-      if type
-        Twitter.const_get(type.capitalize.to_sym).get_or_new(geo)
+    def self.from_response(response={})
+      body = response[:body]
+      if type = body.delete('type')
+        Twitter.const_get(type.capitalize.to_sym).from_response(response)
       else
         raise ArgumentError, "argument must have a 'type' key"
       end

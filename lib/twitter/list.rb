@@ -11,7 +11,7 @@ module Twitter
 
     # @return [Twitter::User]
     def user
-      @user ||= Twitter::User.get_or_new(@attrs['user']) unless @attrs['user'].nil?
+      @user ||= Twitter::User.from_response(:body => @attrs['user'], :response_headers => self.response_headers) unless @attrs['user'].nil?
     end
 
   end

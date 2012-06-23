@@ -16,6 +16,7 @@ module Twitter
         :user_agent => "Twitter Ruby Gem #{Twitter::Version}"
       },
       :open_timeout => 5,
+      :raw => true,
       :ssl => {:verify => false},
       :timeout => 10,
     }

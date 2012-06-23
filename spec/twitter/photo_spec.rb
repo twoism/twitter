@@ -4,25 +4,25 @@ describe Twitter::Photo do
 
   describe "#==" do
     it "returns true when ids and classes are equal" do
-      photo = Twitter::Photo.new('id' => 1)
-      other = Twitter::Photo.new('id' => 1)
+      photo = Twitter::Photo.new(:body => {'id' => 1})
+      other = Twitter::Photo.new(:body => {'id' => 1})
       (photo == other).should be_true
     end
     it "returns false when classes are not equal" do
-      photo = Twitter::Photo.new('id' => 1)
-      other = Twitter::User.new('id' => 1)
+      photo = Twitter::Photo.new(:body => {'id' => 1})
+      other = Twitter::User.new(:body => {'id' => 1})
       (photo == other).should be_false
     end
     it "returns false when ids are not equal" do
-      photo = Twitter::Photo.new('id' => 1)
-      other = Twitter::Photo.new('id' => 2)
+      photo = Twitter::Photo.new(:body => {'id' => 1})
+      other = Twitter::Photo.new(:body => {'id' => 2})
       (photo == other).should be_false
     end
   end
 
   describe "#sizes" do
     it "returns a hash of Sizes when sizes is set" do
-      sizes = Twitter::Photo.new('sizes' => {'small' => {'h' => 226, 'w' => 340, 'resize' => 'fit'}, 'large' => {'h' => 466, 'w' => 700, 'resize' => 'fit'}, 'medium' => {'h' => 399, 'w' => 600, 'resize' => 'fit'}, 'thumb' => {'h' => 150, 'w' => 150, 'resize' => 'crop'}}).sizes
+      sizes = Twitter::Photo.new(:body => {'sizes' => {'small' => {'h' => 226, 'w' => 340, 'resize' => 'fit'}, 'large' => {'h' => 466, 'w' => 700, 'resize' => 'fit'}, 'medium' => {'h' => 399, 'w' => 600, 'resize' => 'fit'}, 'thumb' => {'h' => 150, 'w' => 150, 'resize' => 'crop'}}}).sizes
       sizes.should be_a Hash
       sizes['small'].should be_a Twitter::Size
     end
