@@ -164,7 +164,7 @@ Here are some fun facts about the 3.0 release:
 
 * The entire library is implemented in just 2,000 lines of code
 * With over 5,000 lines of specs, the spec-to-code ratio is over 2.5:1
-* The spec suite contains 675 examples and runs in under 2 seconds on a MacBook
+* The spec suite contains 674 examples and runs in under 2 seconds on a MacBook
 * This project has 100% C0 code coverage (the tests execute every line of
   source code at least once)
 * At the time of release, this library is comprehensive: you can request all
@@ -219,7 +219,7 @@ register an app at http://dev.twitter.com/apps
     end
 Update your status
 
-    Twitter.update("I'm tweeting with @gem!")
+    Twitter.tweet("I'm tweeting with @gem!")
 Read the most recent Tweet in your timeline
 
     Twitter.home_timeline.first.text
